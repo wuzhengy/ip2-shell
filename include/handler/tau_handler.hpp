@@ -134,6 +134,15 @@ namespace ip2
         //dht
         void send_data(std::vector<char>& buf, jsmntok_t* args, std::int64_t tag, char* buffer);
 
+		//ip2 test
+        void put_data_into_swarm(std::vector<char>&, jsmntok_t* args, std::int64_t tag, char* buffer);
+
+        void relay_data_uri(std::vector<char>&, jsmntok_t* args, std::int64_t tag, char* buffer);
+
+        void get_data_from_swarm(std::vector<char>&, jsmntok_t* args, std::int64_t tag, char* buffer);
+
+        void relay_message(std::vector<char>&, jsmntok_t* args, std::int64_t tag, char* buffer);
+
 	private:
 
 		void handle_json_rpc(std::vector<char>& buf, jsmntok_t* tokens, char* buffer);

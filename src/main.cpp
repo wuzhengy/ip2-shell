@@ -103,13 +103,14 @@ int main(int argc, char *const argv[])
     char pubkey_hex[KEY_HEX_LEN + 1]={}; //used for '\0'
     char bootstrap_nodes[1024]={};
 
-    char pid_file[FILE_LEN] = {};
-    char error_log[FILE_LEN] = {};
-    char debug_log[FILE_LEN] = {};
+    char pid_file[FILE_LEN] = {0};
+    char error_log[FILE_LEN] = {0};
+    char debug_log[FILE_LEN] = {0};
 
     int listen_port = 6881;
     int rpc_port = 8080;
 
+    char bind_ip_chars[FILE_LEN] = {0};
     char shell_save_path[FILE_LEN] = {};
     char tau_save_path[FILE_LEN] = {};
 
@@ -121,6 +122,7 @@ int main(int argc, char *const argv[])
             fscanf(f, "%s\n %s\n %s\n", device_id, account_seed, bootstrap_nodes);
             fscanf(f, "%s\n %s\n %s\n", pid_file, error_log, debug_log);
             fscanf(f, "%d\n %d\n", &listen_port, &rpc_port);
+            fscanf(f, "%s\n", bind_ip_chars);
             fscanf(f, "%s\n %s\n", shell_save_path, tau_save_path);
             fclose(f);
         }
@@ -141,21 +143,21 @@ int main(int argc, char *const argv[])
     std::cout << "debug log file: " << debug_log << std::endl;
     std::cout << "Initial CMD Parameters Over" << std::endl;
 
-	//处理seed
-	std::array<char, KEY_LEN> array_seed;
-	char* pubkey = new char[KEY_LEN];
-	char* seckey = new char[KEY_HEX_LEN];
+    //处理seed
+    std::array<char, KEY_LEN> array_seed;
+    char* pubkey = new char[KEY_LEN];
+    char* seckey = new char[KEY_HEX_LEN];
     if(!strcmp(account_seed, "null")){
         //产生随机数
         array_seed = dht::ed25519_create_seed();
         aux::to_hex(array_seed.data(), KEY_LEN, account_seed);
     } else {
-	    hex_char_to_bytes_char(account_seed, array_seed.data(), KEY_HEX_LEN);
+        hex_char_to_bytes_char(account_seed, array_seed.data(), KEY_HEX_LEN);
     }
     
-	dht::public_key m_pubkey;
-	dht::secret_key m_seckey;
-	std::tie(m_pubkey, m_seckey) = dht::ed25519_create_keypair(array_seed);
+    dht::public_key m_pubkey;
+    dht::secret_key m_seckey;
+    std::tie(m_pubkey, m_seckey) = dht::ed25519_create_keypair(array_seed);
 
     if (daemonize)
     {
@@ -237,8 +239,9 @@ int main(int argc, char *const argv[])
     std::cout <<  "account_seed: " << account_seed << std::endl;
 
     //listen port
+    std::string bind_ip(bind_ip_chars);
     std::stringstream listen_interfaces;
-    listen_interfaces << "172.26.1.78:" << listen_port;
+    listen_interfaces << bind_ip << ":" << listen_port;
     std::cout << "listen port: " << listen_interfaces.str() << std::endl;
     sp_set.set_str(settings_pack::listen_interfaces, listen_interfaces.str());
 
@@ -323,7 +326,7 @@ int main(int argc, char *const argv[])
                 case dht_log_alert::alert_type:
                     //std::cout << ses.get_session_time()/1000 << " DHT LOG:  " << (*i)->message().c_str() << std::endl;
                     break;
-				//communication
+                //communication
                 case communication_new_device_id_alert::alert_type:
                     a_handler.alert_on_new_device_id(*i);
                     break;
@@ -344,7 +347,7 @@ int main(int argc, char *const argv[])
                     break;
                 case communication_log_alert::alert_type:
                     break;
-				//blockchain
+                //blockchain
                 case blockchain_log_alert::alert_type:
                     std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG:  " << (*i)->message().c_str() << std::endl;
                     break;
@@ -360,10 +363,10 @@ int main(int argc, char *const argv[])
                     std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG New Consensus Block:  " << (*i)->message().c_str() << std::endl;
                     a_handler.alert_on_new_consensus_point_block(*i);
                     break;
-				case blockchain_new_transaction_alert::alert_type:
-					//a_handler.alert_on_new_transaction(*i);
+                case blockchain_new_transaction_alert::alert_type:
+                    //a_handler.alert_on_new_transaction(*i);
                     break;
-				//blockchain-useless, current
+                //blockchain-useless, current
                 case blockchain_rollback_block_alert::alert_type:
                     std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG RollBack Block:  " << (*i)->message().c_str() << std::endl;
                     a_handler.alert_on_rollback_block(*i);
@@ -373,6 +376,19 @@ int main(int argc, char *const argv[])
                     break;
                 case blockchain_top_three_votes_alert::alert_type:
                     //a_handler.alert_on_top_three_votes(*i);
+                    break;
+                //ip2 alert
+                case put_data_alert::alert_type:
+                    break;
+                case relay_data_uri_alert::alert_type:
+                    break;
+                case incoming_relay_data_uri_alert::alert_type:
+                    break;
+                case get_data_alert::alert_type:
+                    break;
+                case relay_message_alert::alert_type:
+                    break;
+                case incoming_relay_message_alert::alert_type:
                     break;
             }
         }

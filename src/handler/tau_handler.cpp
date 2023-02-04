@@ -171,6 +171,10 @@ static method_handler handlers[] =
     {"is-tx-in-fee-pool", &tau_handler::is_transaction_in_fee_pool},
     {"request-chain-data", &tau_handler::request_chain_data},
     {"put-all-chain-data", &tau_handler::put_all_chain_data},
+    {"put-data-into-swarm", &tau_handler::put_data_into_swarm},
+    {"relay-data-uri", &tau_handler::relay_data_uri},
+    {"get-data-from-swarm", &tau_handler::get_data_from_swarm},
+    {"relay-message", &tau_handler::relay_message},
 };
 
 void tau_handler::handle_json_rpc(std::vector<char>& buf, jsmntok_t* tokens , char* buffer)
@@ -1008,6 +1012,117 @@ void tau_handler::send_data(std::vector<char>& buf, jsmntok_t* args, std::int64_
     std::cout << std::put_time(std::localtime(&now_c), "%c") << " Send-data-Payload: " << payload << std::endl;
 
     m_ses.send(receiver_pubkey, e, alpha, beta, invoke_limit, hit_limit);
+}
+
+void tau_handler::put_data_into_swarm(std::vector<char>& buf, jsmntok_t* args, std::int64_t tag, char* buffer)
+{
+    jsmntok_t* b = find_key(args, buffer, "blob", JSMN_STRING);
+
+    //blob
+    int size = b->end - b->start;
+    buffer[b->end] = 0;
+    char const* blob = &buffer[b->start];
+    std::vector<char> blob_v;
+	blob_v.insert(blob_v.end(), blob, blob+size);
+
+    //uri
+	std::array<char, 20> uri;
+
+	ip2::api::error_code ec = m_ses.put_data_into_swarm(blob_v, uri);
+
+	if(0 == ec)
+		appendf(buf, "{\"result\": \"%s\", \"uri\": %s}", "success", uri.data());
+	else 
+		appendf(buf, "{\"result\": \"%s\", \"error\": %d}", "failed", ec);
+}
+
+void tau_handler::relay_data_uri(std::vector<char>& buf, jsmntok_t* args, std::int64_t tag, char* buffer)
+{
+    jsmntok_t* r = find_key(args, buffer, "receiver", JSMN_STRING);
+    jsmntok_t* u = find_key(args, buffer, "uri", JSMN_STRING);
+    jsmntok_t* t = find_key(args, buffer, "timestamp", JSMN_PRIMITIVE);
+
+    //receiver
+	const int len32 = 32;
+    char const* receiver = &buffer[r->start];
+	std::array<char, len32> ra;
+	for(int i = 0; i < len32; i++)
+		ra[i] = receiver[i];
+
+    //uri
+	const int len20 = 20;
+    char const* uri = &buffer[u->start];
+	std::array<char, len20> ua;
+	for(int i = 0; i < len20; i++)
+		ua[i] = uri[i];
+
+    //timestamp
+    int timestamp = atoi(buffer + t->start);
+
+	ip2::api::error_code ec = m_ses.relay_data_uri(ra, ua, timestamp);
+
+	if(0 == ec)
+		appendf(buf, "{\"result\": \"%s\"}", "success");
+	else 
+		appendf(buf, "{\"result\": \"%s\", \"error\": %d}", "failed", ec);
+}
+
+void tau_handler::get_data_from_swarm(std::vector<char>& buf, jsmntok_t* args, std::int64_t tag, char* buffer)
+{
+    jsmntok_t* s = find_key(args, buffer, "sender", JSMN_STRING);
+    jsmntok_t* u = find_key(args, buffer, "uri", JSMN_STRING);
+    jsmntok_t* t = find_key(args, buffer, "timestamp", JSMN_PRIMITIVE);
+
+    //sender
+	const int len32 = 32;
+    char const* sender = &buffer[s->start];
+	std::array<char, len32> sa;
+	for(int i = 0; i < len32; i++)
+		sa[i] = sender[i];
+
+    //uri
+	const int len20 = 20;
+    char const* uri = &buffer[u->start];
+	std::array<char, len20> ua;
+	for(int i = 0; i < len20; i++)
+		ua[i] = uri[i];
+
+    //timestamp
+    int timestamp = atoi(buffer + t->start);
+
+	ip2::api::error_code ec = m_ses.get_data_from_swarm(sa, ua, timestamp);
+
+	if(0 == ec)
+		appendf(buf, "{\"result\": \"%s\"}", "success");
+	else 
+		appendf(buf, "{\"result\": \"%s\", \"error\": %d}", "failed", ec);
+}
+
+void tau_handler::relay_message(std::vector<char>& buf, jsmntok_t* args, std::int64_t tag, char* buffer)
+{
+    jsmntok_t* r = find_key(args, buffer, "receiver", JSMN_STRING);
+    jsmntok_t* m = find_key(args, buffer, "message", JSMN_STRING);
+
+    //receiver
+	const int len32 = 32;
+    char const* receiver = &buffer[r->start];
+	std::array<char, len32> ra;
+	for(int i = 0; i < len32; i++)
+		ra[i] = receiver[i];
+
+    //message
+    int size = m->end - m->start;
+    buffer[m->end] = 0;
+    char const* msg = &buffer[m->start];
+    std::vector<char> msg_v;
+	msg_v.insert(msg_v.end(), msg, msg + size);
+
+	ip2::api::error_code ec = m_ses.relay_message(ra, msg_v);
+
+	if(0 == ec)
+		appendf(buf, "{\"result\": \"%s\"}", "success");
+	else 
+		appendf(buf, "{\"result\": \"%s\", \"error\": %d}", "failed", ec);
 }
 
 tau_handler::tau_handler(session& s, tau_shell_sql* sqldb, auth_interface const* auth, dht::public_key& pubkey, dht::secret_key& seckey)
