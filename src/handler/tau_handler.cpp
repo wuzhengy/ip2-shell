@@ -1017,6 +1017,7 @@ void tau_handler::send_data(std::vector<char>& buf, jsmntok_t* args, std::int64_
 void tau_handler::put_data_into_swarm(std::vector<char>& buf, jsmntok_t* args, std::int64_t tag, char* buffer)
 {
     jsmntok_t* b = find_key(args, buffer, "blob", JSMN_STRING);
+    jsmntok_t* u = find_key(args, buffer, "uri", JSMN_STRING);
 
     //blob
     int size = b->end - b->start;
@@ -1026,12 +1027,17 @@ void tau_handler::put_data_into_swarm(std::vector<char>& buf, jsmntok_t* args, s
 	blob_v.insert(blob_v.end(), blob, blob+size);
 
     //uri
-	std::array<char, 20> uri;
+	const int len20 = 20;
+    char const* uri = &buffer[u->start];
+	std::array<char, len20> ua;
+	for(int i = 0; i < len20; i++)
+		ua[i] = uri[i];
 
-	ip2::api::error_code ec = m_ses.put_data_into_swarm(blob_v, uri);
+
+	ip2::api::error_code ec = m_ses.put_data_into_swarm(blob_v, ua);
 
 	if(0 == ec)
-		appendf(buf, "{\"result\": \"%s\", \"uri\": %s}", "success", uri.data());
+		appendf(buf, "{\"result\": \"%s\", \"uri\": %s}", "success", ua.data());
 	else 
 		appendf(buf, "{\"result\": \"%s\", \"error\": %d}", "failed", ec);
 }
