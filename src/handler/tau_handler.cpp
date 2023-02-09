@@ -1049,11 +1049,12 @@ void tau_handler::relay_data_uri(std::vector<char>& buf, jsmntok_t* args, std::i
     jsmntok_t* t = find_key(args, buffer, "timestamp", JSMN_PRIMITIVE);
 
     //receiver
-	const int len32 = 32;
-    char const* receiver = &buffer[r->start];
-	std::array<char, len32> ra;
-	for(int i = 0; i < len32; i++)
-		ra[i] = receiver[i];
+    char const* receiver_pubkey_hex = &buffer[r->start];
+    char* receiver_pubkey_char = new char[KEY_LEN];
+    hex_char_to_bytes_char(receiver_pubkey_hex, receiver_pubkey_char, KEY_HEX_LEN);
+	std::array<char, KEY_LEN> ra;
+	for(int i = 0; i < KEY_LEN; i++)
+		ra[i] = receiver_pubkey_char[i];
 
     //uri
 	const int len20 = 20;
@@ -1080,11 +1081,12 @@ void tau_handler::get_data_from_swarm(std::vector<char>& buf, jsmntok_t* args, s
     jsmntok_t* t = find_key(args, buffer, "timestamp", JSMN_PRIMITIVE);
 
     //sender
-	const int len32 = 32;
-    char const* sender = &buffer[s->start];
-	std::array<char, len32> sa;
-	for(int i = 0; i < len32; i++)
-		sa[i] = sender[i];
+    char const* sender_pubkey_hex = &buffer[s->start];
+    char* sender_pubkey_char = new char[KEY_LEN];
+    hex_char_to_bytes_char(sender_pubkey_hex, sender_pubkey_char, KEY_HEX_LEN);
+	std::array<char, KEY_LEN> sa;
+	for(int i = 0; i < KEY_LEN; i++)
+		sa[i] = sender_pubkey_char[i];
 
     //uri
 	const int len20 = 20;
@@ -1110,11 +1112,12 @@ void tau_handler::relay_message(std::vector<char>& buf, jsmntok_t* args, std::in
     jsmntok_t* m = find_key(args, buffer, "message", JSMN_STRING);
 
     //receiver
-	const int len32 = 32;
-    char const* receiver = &buffer[r->start];
-	std::array<char, len32> ra;
-	for(int i = 0; i < len32; i++)
-		ra[i] = receiver[i];
+    char const* receiver_pubkey_hex = &buffer[r->start];
+    char* receiver_pubkey_char = new char[KEY_LEN];
+    hex_char_to_bytes_char(receiver_pubkey_hex, receiver_pubkey_char, KEY_HEX_LEN);
+	std::array<char, KEY_LEN> ra;
+	for(int i = 0; i < KEY_LEN; i++)
+		ra[i] = receiver_pubkey_char[i];
 
     //message
     int size = m->end - m->start;

@@ -351,6 +351,12 @@ int main(int argc, char *const argv[])
                 case blockchain_log_alert::alert_type:
                     std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG:  " << (*i)->message().c_str() << std::endl;
                     break;
+				case transport_log_alert::alert_type:
+					std::cout << ses.get_session_time()/1000 << " TRANSPORT LOG:  " << (*i)->message().c_str() << std::endl;
+					break;
+				case assemble_log_alert::alert_type:
+					std::cout << ses.get_session_time()/1000 << " ASSEMBLE LOG:  " << (*i)->message().c_str() << std::endl;
+					break;
                 case blockchain_new_head_block_alert::alert_type:
                     std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG New Head Block:  " << (*i)->message().c_str() << std::endl;
                     a_handler.alert_on_new_head_block(*i);
