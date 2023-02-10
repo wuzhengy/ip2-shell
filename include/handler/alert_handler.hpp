@@ -16,34 +16,6 @@ namespace ip2 {
 
         void alert_on_session_stats(alert* i);
 
-		//communication
-		void alert_on_new_device_id(alert* i);
-
-		void alert_on_new_message(alert* i);
-
-		void alert_on_confirmation_root(alert* i);
-
-		void alert_on_syncing_message(alert* i);
-
-		void alert_on_friend_info(alert* i);
-
-		void alert_on_last_seen(alert* i);
-
-		//blockchain
-		void alert_on_new_head_block(alert *i);
-
-		void alert_on_new_tail_block(alert *i);
-
-		void alert_on_new_consensus_point_block(alert *i);
-
-		void alert_on_new_transaction(alert *i);
-		
-		void alert_on_rollback_block(alert *i);
-
-		void alert_on_fork_point_block(alert *i);
-
-		void alert_on_top_three_votes(alert *i);
-		
 	private:
 		tau_shell_sql* m_db;
 	};

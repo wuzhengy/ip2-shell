@@ -263,10 +263,6 @@ int main(int argc, char *const argv[])
     //referable
     sp_set.set_bool(settings_pack::dht_non_referrable, false);
 
-    //disable communication and blockchain
-    sp_set.set_bool(settings_pack::enable_communication, false);
-    sp_set.set_bool(settings_pack::enable_blockchain, false);
-
     std::cout << "Session parameters' setting Over" << std::endl;
 
     session_params sp_param(sp_set) ;
@@ -326,63 +322,12 @@ int main(int argc, char *const argv[])
                 case dht_log_alert::alert_type:
                     //std::cout << ses.get_session_time()/1000 << " DHT LOG:  " << (*i)->message().c_str() << std::endl;
                     break;
-                //communication
-                case communication_new_device_id_alert::alert_type:
-                    a_handler.alert_on_new_device_id(*i);
-                    break;
-                case communication_new_message_alert::alert_type:
-                    a_handler.alert_on_new_message(*i);
-                    break;
-                case communication_confirmation_root_alert::alert_type:
-                    a_handler.alert_on_confirmation_root(*i);
-                    break;
-                case communication_syncing_message_alert::alert_type:
-                    a_handler.alert_on_syncing_message(*i);
-                    break;
-                case communication_friend_info_alert::alert_type:
-                    a_handler.alert_on_friend_info(*i);
-                    break;
-                case communication_last_seen_alert::alert_type:
-                    a_handler.alert_on_last_seen(*i);
-                    break;
-                case communication_log_alert::alert_type:
-                    break;
-                //blockchain
-                case blockchain_log_alert::alert_type:
-                    std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG:  " << (*i)->message().c_str() << std::endl;
-                    break;
 				case transport_log_alert::alert_type:
 					std::cout << ses.get_session_time()/1000 << " TRANSPORT LOG:  " << (*i)->message().c_str() << std::endl;
 					break;
 				case assemble_log_alert::alert_type:
 					std::cout << ses.get_session_time()/1000 << " ASSEMBLE LOG:  " << (*i)->message().c_str() << std::endl;
 					break;
-                case blockchain_new_head_block_alert::alert_type:
-                    std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG New Head Block:  " << (*i)->message().c_str() << std::endl;
-                    a_handler.alert_on_new_head_block(*i);
-                    break;
-                case blockchain_new_tail_block_alert::alert_type:
-                    std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG New Tail Block:  " << (*i)->message().c_str() << std::endl;
-                    a_handler.alert_on_new_tail_block(*i);
-                    break;
-                case blockchain_new_consensus_point_block_alert::alert_type:
-                    std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG New Consensus Block:  " << (*i)->message().c_str() << std::endl;
-                    a_handler.alert_on_new_consensus_point_block(*i);
-                    break;
-                case blockchain_new_transaction_alert::alert_type:
-                    //a_handler.alert_on_new_transaction(*i);
-                    break;
-                //blockchain-useless, current
-                case blockchain_rollback_block_alert::alert_type:
-                    std::cout << ses.get_session_time()/1000 << " BLOCKCHAIN LOG RollBack Block:  " << (*i)->message().c_str() << std::endl;
-                    a_handler.alert_on_rollback_block(*i);
-                    break;
-                case blockchain_fork_point_block_alert::alert_type:
-                    //a_handler.alert_on_fork_point_block(*i);
-                    break;
-                case blockchain_top_three_votes_alert::alert_type:
-                    //a_handler.alert_on_top_three_votes(*i);
-                    break;
                 //ip2 alert
                 case put_data_alert::alert_type:
                     break;
