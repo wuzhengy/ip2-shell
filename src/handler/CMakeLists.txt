@@ -12,7 +12,7 @@ add_definitions(-D TORRENT_USE_LIBCRYPTO)
 include_directories(../../include)
 add_library(handler "")
 
-target_link_libraries(handler TAU)
+target_link_libraries(handler ip2)
 
 target_link_libraries(handler dl)
 
