@@ -12,7 +12,7 @@ add_definitions(-D TORRENT_USE_LIBCRYPTO)
 include_directories(../../include)
 add_library(util "")
 
-target_link_libraries(util TAU)
+target_link_libraries(util ip2)
 
 target_link_libraries(util dl)
 
