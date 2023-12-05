@@ -1,13 +1,14 @@
 ###  compile
 ```
-   0. libTAU build，详见libTAU/doc/building.md
-   
-	1.  环境变量设置(和build libTAU一致)
-    	 $ENV{OPENSSL_ROOT}/include 
-    	 $ENV{BOOST_ROOT} 
-    	 $ENV{SQLITE_ROOT}/include
-   
-     2. mkdir build && cd build && cmake ../ && make
+1. To run ip2-shell, you need to build ip2 lib, please go to wuzhengy/ip2 to do this as prerequisite
+2. make sure following variables existing and correct 
+    	 OPENSSL_ROOT	and the /include folder existing 
+    	 BOOST_ROOT 
+    	 SQLITE_ROOT	and the /include folder existing
+3. mkdir build
+4. cd build
+5. cmake ../
+6. make
 ```
 
 ### Run
