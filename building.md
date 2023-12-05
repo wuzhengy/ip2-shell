@@ -13,19 +13,20 @@
 
 ### Run
 #### run.sh 
- 	两个配置，一个配置线上config.txt，一个配置测试网络config_dev.txt
- config参数解析
+the default mode of ip2 in ip2-shell is server mode, which means it can run as bootstrap. Each node online will seak bootstraps nodes to form up swarm. 
+
+The config file explains: 
  ```
-           f49126ba43138eedeb6b51996e8281e1     //device_id
-			null    //seed，给null，tau-shell会随机生成
-            tau://83024767468B8BF8DB868F336596C63561265D553833E5C0BF3E4767659B826B@13.229.53.249:6882 // bs节点
+           f49126ba43138eedeb6b51996e8281e1     //device_id not really important, as long as it unique, it is a field ref hardward
+			null    //seed, if set to null, a random seed will generated 
+            tau://83024767468B8BF8DB868F336596C63561265D553833E5C0BF3E4767659B826B@13.229.53.249:6882 // boot strap node to start with
             ./pid.txt
             ./error.txt
             ./debug.txt
-            6882     //libTAU监听端口
-            8080     //rpc端口，后续和rpc.sh cmd端口对应
-            /data/TAU_SHELL/TAU_TEST //tau-shell数据存储目录
-            .libTAU_test    //libTAU目录
+            6882     //ip2 swarm listenning port
+            8080     //rpc port for rpc call and command
+            /data/TAU_SHELL/TAU_TEST //ip-shell data folder 
+            .libTAU_test    //libip2 own data folder
 ```
 #### rpc cmd使用
 ./rpc.sh
